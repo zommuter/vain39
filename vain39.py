@@ -5,6 +5,7 @@ import bip_utils
 from bip_utils import (
     Bip39WordsNum, Bip39MnemonicGenerator, Bip39SeedGenerator, Bip44Changes, Bip44Coins, Bip44, Bip84Coins, Bip84, Bip49Coins, Bip49
 )
+from bip_utils.bip.bip44_base import Bip44Base
 
 #%% Generate random mnemonic
 def new_mnemonic():
@@ -15,7 +16,7 @@ print(f"Mnemonic string: {mnemonic}")
 
 class Bipper(object):
     def __init__(self, bip=44, seed_bytes:bytes = None, mnemonic=None, coin_type = "BITCOIN"):
-        self.Bip = {44: Bip44, 49: Bip49, 84: Bip84}[bip]
+        self.Bip: Bip44Base = {44: Bip44, 49: Bip49, 84: Bip84}[bip]
         self.coin_type = {44: Bip44Coins, 49: Bip49Coins, 84: Bip84Coins}[bip][coin_type]
         assert (seed_bytes is None) or (mnemonic is None), "Cannot provide both seed_bytes and mnemonic"
         if seed_bytes is None:
