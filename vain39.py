@@ -35,6 +35,11 @@ class Bipper(object):
         #print(f"Master key (extended): {self.mst_ctx.PrivateKey().ToExtended()}")
         #print(f"Master key (WIF): {self.mst_ctx.PrivateKey().ToWif()}")
 
+        # Print master public key
+        print(f"Master public key (bytes): {self.mst_ctx.PublicKey().RawUncompressed().ToHex()}")
+        print(f"Master public key (compressed): {self.mst_ctx.PublicKey().RawCompressed().ToHex()}")
+        print(f"Master public key (address): {self.mst_ctx.PublicKey().ToAddress()}")
+
     def generate_account_keys(self, account:int = 0):
         self.acc_ctx = self.mst_ctx.Purpose().Coin().Account(account)
         self.chg_ctx = self.acc_ctx.Change(Bip44Changes.CHAIN_EXT)
