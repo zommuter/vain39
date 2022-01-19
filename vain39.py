@@ -50,12 +50,3 @@ for bip in (44, 84, 49, -44):
     print(f"BIP{bip}")
     bippers[bip] = Bipper(bip=abs(bip), coin_type=coin_type, mnemonic=mnemonic)
     print(bippers[bip].addresses)
-
-#%% Generate 3 addresses: m/44'/0'/0'/0/i
-for bip in (44, 84, 49, -44):
-    print(f"BIP{bip}")
-    for i in range(3):
-        (addr_ctx, address_index) = bippers[bip].get_address()
-        print(f"{address_index}. Address: {addr_ctx.PublicKey().ToAddress()}")
-
-# %%
