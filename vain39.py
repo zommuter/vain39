@@ -14,9 +14,9 @@ mnemonic = new_mnemonic()
 print(f"Mnemonic string: {mnemonic}")
 
 class Bipper(object):
-    def __init__(self, bip=44, seed_bytes:bytes = None, mnemonic=None):
+    def __init__(self, bip=44, seed_bytes:bytes = None, mnemonic=None, coin_type = "BITCOIN"):
         self.Bip = {44: Bip44, 49: Bip49, 84: Bip84}[bip]
-        self.coin_type = {44: Bip44Coins.BITCOIN, 49: Bip49Coins.BITCOIN, 84: Bip84Coins.BITCOIN}[bip]
+        self.coin_type = {44: Bip44Coins, 49: Bip49Coins, 84: Bip84Coins}[bip][coin_type]
         assert (seed_bytes is None) or (mnemonic is None), "Cannot provide both seed_bytes and mnemonic"
         if seed_bytes is None:
             # Generate seed from mnemonic
@@ -43,9 +43,10 @@ class Bipper(object):
         return self.chg_ctx.AddressIndex(address_index)
 
 bippers = {}
-for bip in (44, 84, 49):
+for bip in (44, 84, 49, -44):
+    coin_type = "ETHEREUM" if bip == -44 else "BITCOIN"
     print(f"BIP{bip}")
-    bippers[bip] = Bipper(bip=bip)
+    bippers[bip] = Bipper(bip=abs(bip), coin_type=coin_type)
     bippers[bip].generate_account_keys()
 
 # Generate the first 3 addresses: m/44'/0'/0'/0/i
