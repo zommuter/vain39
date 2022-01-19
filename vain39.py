@@ -4,6 +4,9 @@ from bip_utils import (
 )
 from bip_utils.bip.bip44_base import Bip44Base
 
+import colorama, re
+colorama.init(autoreset=True)
+
 def new_mnemonic():
     return Bip39MnemonicGenerator().FromWordsNumber(Bip39WordsNum.WORDS_NUM_24)
 
@@ -39,14 +42,27 @@ class Bipper(object):
             self.address_indices[account] += 1
         return (chg_ctx.AddressIndex(address_index), address_index)
 
-#%% Generate random mnemonic
-mnemonic = new_mnemonic()
-print(f"Mnemonic string: {mnemonic}")
-
 #%%
-bippers = {}
-for bip in (44, 84, 49, -44):
-    coin_type = "ETHEREUM" if bip == -44 else "BITCOIN"
-    print(f"BIP{bip}")
-    bippers[bip] = Bipper(bip=abs(bip), coin_type=coin_type, mnemonic=mnemonic)
-    print(bippers[bip].addresses)
+
+pattern = r'(42)'
+done = False
+
+while(not done):
+    # Generate random mnemonic
+    mnemonic = new_mnemonic()
+    print(f"Mnemonic string: {mnemonic}")
+
+    bippers = {}
+    for bip in (44, 84, 49, -44):
+        coin_type = "ETHEREUM" if bip == -44 else "BITCOIN"
+        bippers[bip] = Bipper(bip=abs(bip), coin_type=coin_type, mnemonic=mnemonic)
+        addresses = bippers[bip].addresses
+        for acc_key, accounts in enumerate(addresses):
+            for key, address in enumerate(addresses[acc_key]):
+                if re.search(pattern, address):
+                    #addresses[acc_key][key] = re.sub(pattern, colorama.Fore.GREEN + r'\1' + colorama.Fore.RESET, address)
+                    match = re.sub(pattern, colorama.Fore.RED + r'\1' + colorama.Fore.RESET, address)
+                    done = True
+                    print(f"{colorama.Fore.RED}BIP{bip}")
+                    print(match)
+# %%
