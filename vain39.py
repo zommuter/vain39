@@ -1,11 +1,26 @@
+"""
+    TODO: proper documentation...
+    for now, just adjust the pattern and BIPS list and run the script...
+"""
+
+pattern = r'(?<=^bc1.)(42)'  # do bc1 addresses actually always have a q next?
+
+# for colorful RegEx-matches, TODO make optional
+import colorama, re
+colorama.init(autoreset=True)
+
+# TODO make sure repl properly includes all groups etc, ideally automagically (this is only used for colorized output, which should be optional)
+repl = colorama.Fore.RED + r'\1' + colorama.Fore.RESET
+keep_running = True
+
+#BIPs = (44, 84, 49, -44)  # BTC 1,bc1,3 addresses and ETH via BIP44
+BIPs = (84,)  # only bc1 BTC addresses
+
 # %%
 from bip_utils import (
     Bip39WordsNum, Bip39MnemonicGenerator, Bip39SeedGenerator, Bip44Changes, Bip44Coins, Bip44, Bip84Coins, Bip84, Bip49Coins, Bip49
 )
 from bip_utils.bip.bip44_base import Bip44Base
-
-import colorama, re
-colorama.init(autoreset=True)
 
 def new_mnemonic():
     return Bip39MnemonicGenerator().FromWordsNumber(Bip39WordsNum.WORDS_NUM_24)
@@ -43,24 +58,20 @@ class Address_Generator(object):
         return (chg_ctx.AddressIndex(address_index), address_index)
 
 #%%
-pattern = r'(?<=^bc1.)(42)'
-keep_running = True
-
 done = False
 while(not done or keep_running):
     # Generate random mnemonic
     mnemonic = new_mnemonic()
 
     address_generators = {}
-#    for bip in (44, 84, 49, -44):
-    for bip in (84,):
+    for bip in BIPs:
         coin_type = "ETHEREUM" if bip == -44 else "BITCOIN"
         address_generators[bip] = Address_Generator(bip=abs(bip), coin_type=coin_type, mnemonic=mnemonic, accounts=5, addresses=5)
         addresses = address_generators[bip].addresses
         for acc_key, accounts in enumerate(addresses):
             for key, address in enumerate(addresses[acc_key]):
                 if re.search(pattern, address):
-                    match = re.sub(pattern, colorama.Fore.RED + r'\1' + colorama.Fore.RESET, address)
+                    match = re.sub(pattern, repl, address)  # TODO: Maybe use groups and indices for color highlighting instead
                     done = True
                     print(f"{match}: {bip}/{acc_key}/{key} @ {mnemonic} ")
 # %%
